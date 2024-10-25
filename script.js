@@ -65,16 +65,24 @@ operatorButtons.forEach(button => {
     if (num1 === "") return;
     if (num1 && operator && num2) {
       result = operate(parseFloat(num1), operator, parseFloat(num2));
+
+      if (typeof result === "number" && !Number.isInteger(result)) {
+        result = parseFloat(result.toFixed(4))
+      }
       updateDisplayValue(result);
 
       num1 = result.toString();
       num2 = "";
-      operator = "";
-      isOperatorSelected = false;
+      // operator = "";
     }
+
     operator = button.dataset.operator;
     isOperatorSelected = true;
+    isDecimalInNum2 = false;
+
     updateDisplayValue(`${num1} ${operator}`);
+
+
   })
 })
 
@@ -85,6 +93,10 @@ equal.addEventListener("click", () => {
 
   if (num1 && operator && num2) {
     result = operate(parseFloat(num1), operator, parseFloat(num2));
+
+    if (typeof result === "number" && !Number.isInteger(result)) {
+      result = parseFloat(result.toFixed(4))
+    }
   } else {
     return "";
   }
@@ -95,6 +107,8 @@ equal.addEventListener("click", () => {
   num2 = "";
   operator = "";
   isOperatorSelected = false;
+  isDecimalInNum1 = num1.includes(".");
+  isDecimalInNum2 = false;
 });
 
 const clearButton = document.querySelector("#clear");
@@ -104,5 +118,75 @@ clearButton.addEventListener("click", () => {
   num2 = "";
   operator = "";
   isOperatorSelected = false;
+  isDecimalInNum1 = false;
+  isDecimalInNum2 = false;
   updateDisplayValue("0")
 })
+
+const decimalButton = document.querySelector(".decimal-button");
+
+let isDecimalInNum1 = false;
+let isDecimalInNum2 = false;
+
+decimalButton.addEventListener("click", () => {
+
+  if (!operator) {
+
+    if (!isDecimalInNum1 && !num1.includes(".")) {
+      if (num1 === "") num1 = "0"
+      num1 += ".";
+      updateDisplayValue(num1);
+      isDecimalInNum1 = true;
+    }
+
+  } else {
+
+    if (!isDecimalInNum2 && !num2.includes(".")) {
+      if (num2 === "") num2 = "0"
+      num2 += ".";
+      updateDisplayValue(`${num1} ${operator} ${num2}`);
+      isDecimalInNum2 = true;
+    }
+  }
+});
+
+const percent = document.querySelector("#percent");
+
+percent.addEventListener("click", () => {
+
+  if (num1 && !operator && !num2) {
+    num1 = ((parseFloat(num1) / 100).toFixed(4)).toString();
+    updateDisplayValue(num1);
+  }
+
+  if (num1 && operator && num2) {
+    num2 = ((parseFloat(num2) / 100).toFixed(4)).toString();
+    updateDisplayValue(`${num1} ${operator} ${num2}`);
+  }
+});
+
+const negateButton = document.querySelector(".negate");
+negateButton.addEventListener("click", () => {
+
+  if (num1 && !operator && !num2) {
+    num1 = (parseFloat(num1) * (-1)).toString();
+    updateDisplayValue(num1);
+  }
+
+  if (num1 && operator && num2) {
+
+    num2 = (parseFloat(num2) * (-1)).toString();
+    updateDisplayValue(`${num1} ${operator} ${num2}`);
+  }
+});
+
+const backspaceButton = document.getElementById('backspace');
+
+backspaceButton.addEventListener('click', () => {
+
+  display.textContent = display.textContent.slice(0, -1);
+
+  if (display.textContent === '') {
+    display.textContent = '0';
+  }
+});
