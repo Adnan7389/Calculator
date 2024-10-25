@@ -180,13 +180,33 @@ negateButton.addEventListener("click", () => {
   }
 });
 
+function pressBackspace() {
+  console.log(`num1: ${num1}, operator: ${operator}, num2: ${num2}`);
+  if (num2.length > 0) {
+    num2 = num2.slice(0, -1);
+
+    if (num2 === '') {
+      updateDisplayValue(`${num1} ${operator}`);
+    } else {
+      updateDisplayValue(`${num1} ${operator} ${num2}`);
+    }
+  } else if (operator) {
+
+    operator = '';
+    isOperatorSelected = false;
+    updateDisplayValue(num1);
+  } else if (num1.length > 0) {
+
+    num1 = num1.slice(0, -1);
+
+    if (num1 === '') {
+      updateDisplayValue('0');
+    } else {
+      updateDisplayValue(num1);
+    }
+  }
+}
+
 const backspaceButton = document.getElementById('backspace');
 
-backspaceButton.addEventListener('click', () => {
-
-  display.textContent = display.textContent.slice(0, -1);
-
-  if (display.textContent === '') {
-    display.textContent = '0';
-  }
-});
+backspaceButton.addEventListener('click', pressBackspace);
